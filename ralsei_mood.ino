@@ -1,22 +1,32 @@
-const unsigned long REPORT_INTERVAL = 1000;
-unsigned long lastReport = 0;
+#include "src/display/display.h"
+#include "src/temperature/temperature.h"
+#include "src/photoresistor/photoresistor.h"
+#include "src/potentiometer/potentiometer.h"
+#include "src/joystick/joystick.h"
 
 void setup() {
   Serial.begin(115200);
-  delay(500);
-
-  Serial.println();
-  Serial.println("Ralsei mood creature: online");
+  
+  setupDisplay();
+  setupPhotoResistor();
+  setupPotentiometer();
+  setupJoystick();
+  
 }
 
 void loop() {
-  unsigned long now = millis();
+  getTemperature();
+  getPhotoResistor();
+  getPotentiometer();
+  int command = getJoystick();
 
-  if (now - lastReport >= REPORT_INTERVAL) {
-    lastReport = now;
-
-    Serial.print("Alive - uptime: ");
-    Serial.print(now / 1000);
-    Serial.println(" seconds");
+  if (command & COMMAND_LEFT) {
+    // move text index left
   }
-}
+  if (command & COMMAND_RIGHT) {
+    // move text index right
+  }
+
+  delay(500);
+
+} 
