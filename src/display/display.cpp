@@ -37,6 +37,12 @@ void setupDisplay() {
   display.display();  // Pushes everything drawn above onto the physical screen.
 }
 
-void displayMessage() {
+void displayMessage(const char* input_message) {
+  display.clearDisplay();
+  display.setTextColor(SSD1306_WHITE);
 
+  display.setTextSize(1);
+  display.setCursor(0, 0);
+  display.println(input_message);
+  display.display();
 }

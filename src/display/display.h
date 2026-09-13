@@ -2,4 +2,4 @@
 
 void setupDisplay();
 
-void displayMessage();
+void displayMessage(const char* input_message);

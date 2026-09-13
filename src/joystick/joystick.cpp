@@ -39,30 +39,7 @@ int getJoystick() {
     command = command | COMMAND_UP;
   else if (valueY > DOWN_THRESHOLD)
     command = command | COMMAND_DOWN;
-
-  // NOTE: AT A TIME, THERE MAY BE NO COMMAND, ONE COMMAND OR TWO COMMANDS
-
-  // print command to serial and process command
-  if (command & COMMAND_LEFT) {
-    Serial.println("COMMAND LEFT");
-    // TODO: add your task here
-  }
-
-  if (command & COMMAND_RIGHT) {
-    Serial.println("COMMAND RIGHT");
-    // TODO: add your task here
-  }
-
-  if (command & COMMAND_UP) {
-    Serial.println("COMMAND UP");
-    // TODO: add your task here
-  }
-
-  if (command & COMMAND_DOWN) {
-    Serial.println("COMMAND DOWN");
-    // TODO: add your task here
-  }
-
+ 
   return command;
 }
 

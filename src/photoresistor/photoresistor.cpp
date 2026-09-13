@@ -22,6 +22,4 @@ void getPhotoResistor() {
     // > 2k = very bright
     // inbetween = normal
 
-    delay(500);
-
 }
