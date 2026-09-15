@@ -1,8 +1,14 @@
 #pragma once
 
+enum class PhotoId {
+  CABIN,
+  MOM_AND_BRO,
+  MOM_AND_DAD,
+  MOM,
+  THREE,
+};
+
 void setupDisplay();
 
-void displayMessage(const char* input_message);
-
-// Draws the selected family photo in full RGB565 color.
-void displaySelectedPhoto();
+// Draw one full-color family photo selected by the joystick.
+void displayPhoto(PhotoId photo);

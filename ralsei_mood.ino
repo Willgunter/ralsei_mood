@@ -5,13 +5,16 @@
 #include "src/potentiometer/potentiometer.h"
 #include "src/joystick/joystick.h"
 
-// Set false to use the "one" through "four" text.
-// Set true to show the single full-color photo.
-constexpr bool SHOW_PHOTO = true;
-
-const char* text_vals[] = {"one", "two", "three", "four"};
-const int text_count = sizeof(text_vals) / sizeof(text_vals[0]);
-int curr_text_val = 0;
+constexpr PhotoId photos[] = {
+  PhotoId::CABIN,
+  PhotoId::MOM_AND_BRO,
+  PhotoId::MOM_AND_DAD,
+  PhotoId::MOM,
+  PhotoId::THREE,
+};
+constexpr int photo_count = sizeof(photos) / sizeof(photos[0]);
+int curr_photo = 0;
+int previous_command = COMMAND_NO;
 
 void setup() {
   Serial.begin(115200);
@@ -21,10 +24,8 @@ void setup() {
   setupPhotoResistor();
   setupPotentiometer();
   setupJoystick();
-  
-  if (SHOW_PHOTO) {
-    displaySelectedPhoto();
-  }
+
+  displayPhoto(photos[curr_photo]);
 }
 
 void loop() {
@@ -34,17 +35,21 @@ void loop() {
 
   int command = getJoystick();
 
-  if (command & COMMAND_LEFT) {
-    curr_text_val = (curr_text_val + text_count - 1) % text_count;
-  }
-  if (command & COMMAND_RIGHT) {
-    curr_text_val = (curr_text_val + 1) % text_count;
+  // React once per joystick tilt. Return it to center before the next photo.
+  const bool left_pressed = (command & COMMAND_LEFT) &&
+                            !(previous_command & COMMAND_LEFT);
+  const bool right_pressed = (command & COMMAND_RIGHT) &&
+                             !(previous_command & COMMAND_RIGHT);
+
+  if (left_pressed) {
+    curr_photo = (curr_photo + photo_count - 1) % photo_count;
+    displayPhoto(photos[curr_photo]);
+  } else if (right_pressed) {
+    curr_photo = (curr_photo + 1) % photo_count;
+    displayPhoto(photos[curr_photo]);
   }
 
-  if (!SHOW_PHOTO) {
-    displayMessage(text_vals[curr_text_val]);
-  }
-
+  previous_command = command;
 
   delay(500);
 

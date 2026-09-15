@@ -3,7 +3,7 @@
 #include <Adafruit_SSD1351.h>
 
 #include "display.h"
-#include "selected_photo_rgb565.h"
+#include "family_photos_rgb565.h"
 
 #define BLACK   0x0000
 #define WHITE   0xFFFF
@@ -39,16 +39,25 @@ void setupDisplay() {
   display.drawCircle(64, 98, 18, MAGENTA);
 }
 
-void displayMessage(const char* input_message) {
-  display.fillScreen(BLACK);
-  display.setTextColor(WHITE);
+void displayPhoto(PhotoId photo) {
+  const uint16_t* pixels = CABIN_PHOTO_RGB565;
 
-  display.setTextSize(1);
-  display.setCursor(0, 0);
-  display.println(input_message);
-}
+  switch (photo) {
+    case PhotoId::MOM_AND_BRO:
+      pixels = MOM_AND_BRO_PHOTO_RGB565;
+      break;
+    case PhotoId::MOM_AND_DAD:
+      pixels = MOM_AND_DAD_PHOTO_RGB565;
+      break;
+    case PhotoId::MOM:
+      pixels = MOM_PHOTO_RGB565;
+      break;
+    case PhotoId::THREE:
+      pixels = THREE_PHOTO_RGB565;
+      break;
+    case PhotoId::CABIN:
+      break;
+  }
 
-void displaySelectedPhoto() {
-  display.drawRGBBitmap(0, 0, SELECTED_PHOTO_RGB565, SCREEN_WIDTH,
-                        SCREEN_HEIGHT);
+  display.drawRGBBitmap(0, 0, pixels, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
