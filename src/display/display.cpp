@@ -1,48 +1,54 @@
-#include <Adafruit_SSD1306.h>
-#include <Wire.h>
+#include <SPI.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1351.h>
+
 #include "display.h"
+#include "selected_photo_rgb565.h"
+
+#define BLACK   0x0000
+#define WHITE   0xFFFF
+#define CYAN    0x07FF
+#define YELLOW  0xFFE0
+#define MAGENTA 0xF81F
 
 constexpr int SCREEN_WIDTH = 128;
-constexpr int SCREEN_HEIGHT = 64;
-constexpr int OLED_RESET = -1;
-constexpr int I2C_IN = 21;
-constexpr int I2C_OUT = 22;
-constexpr int OLED_ADDRESS = 0x3C;
+constexpr int SCREEN_HEIGHT = 128;
+
+constexpr int OLED_CS  = 33;
+constexpr int OLED_DC  = 16;
+constexpr int OLED_RST = 17;
 
 // 0x3C is the most common address for this OLED.
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+Adafruit_SSD1351 display(OLED_CS, OLED_DC, OLED_RST);
 
 void setupDisplay() {
+ 
+  display.begin();
 
-  // Tell the ESP32 which pins we wired for I2C.
-  Wire.begin(I2C_IN, I2C_OUT);
+  display.fillScreen(BLACK);
 
-  if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)) {
-    Serial.println("OLED was not found.");
-    while (true) {
-      delay(10);
-    }
-  }
+  display.setTextSize(2);
+  display.setTextColor(CYAN);
+  display.setCursor(8, 20);
+  display.println("Hello,");
 
-  display.clearDisplay();
+  display.setTextColor(YELLOW);
+  display.setCursor(8, 48);
+  display.println("creature!");
 
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0, 0);
-  display.println("Hello, creature!");
-
-  display.setCursor(0, 18);
-  display.println("I am alive.");
-
-  display.display();  // Pushes everything drawn above onto the physical screen.
+  display.drawCircle(64, 98, 18, MAGENTA);
 }
 
 void displayMessage(const char* input_message) {
-  display.clearDisplay();
-  display.setTextColor(SSD1306_WHITE);
+  display.fillScreen(BLACK);
+  display.setTextColor(WHITE);
 
   display.setTextSize(1);
   display.setCursor(0, 0);
   display.println(input_message);
-  display.display();
+}
+
+void displaySelectedPhoto() {
+  display.drawRGBBitmap(0, 0, SELECTED_PHOTO_RGB565, SCREEN_WIDTH,
+                        SCREEN_HEIGHT);
 }
