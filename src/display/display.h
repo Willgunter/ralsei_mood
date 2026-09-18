@@ -13,4 +13,5 @@ enum class PhotoId {
 void setupDisplay();
 
 // Draw one full-color family photo and its ambient-light sky level.
-void displayPhoto(PhotoId photo, SunLevel sun_level);
+// brightness_percent is applied to every RGB565 pixel; 100 leaves it unchanged.
+void displayPhoto(PhotoId photo, SunLevel sun_level, int brightness_percent);

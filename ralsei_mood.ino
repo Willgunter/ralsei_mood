@@ -3,6 +3,7 @@
 #include "src/temperature/temperature.h"
 #include "src/photoresistor/photoresistor.h"
 #include "src/joystick/joystick.h"
+#include "src/potentiometer/potentiometer.h"
 
 constexpr PhotoId photos[] = {
   PhotoId::CABIN,
@@ -15,6 +16,7 @@ constexpr int photo_count = sizeof(photos) / sizeof(photos[0]);
 int curr_photo = 0;
 int previous_command = COMMAND_NO;
 SunLevel current_sun_level = SunLevel::SUNRISE;
+int current_brightness_percent = BASE_BRIGHTNESS_PERCENT;
 
 void setup() {
   Serial.begin(115200);
@@ -23,14 +25,17 @@ void setup() {
   setupDisplay();
   setupPhotoResistor();
   setupJoystick();
+  setupPotentiometer();
 
   current_sun_level = getPhotoResistor();
-  displayPhoto(photos[curr_photo], current_sun_level);
+  current_brightness_percent = getPotentiometerBrightnessPercent();
+  displayPhoto(photos[curr_photo], current_sun_level, current_brightness_percent);
 }
 
 void loop() {
   getTemperature();
   const SunLevel selected_sun_level = getPhotoResistor();
+  const int selected_brightness_percent = getPotentiometerBrightnessPercent();
 
   int command = getJoystick();
 
@@ -48,9 +53,14 @@ void loop() {
     photo_changed = true;
   }
 
-  if (photo_changed || selected_sun_level != current_sun_level) {
+  // Ignore a one-point change so small ADC fluctuations do not cause redraws.
+  const bool brightness_changed =
+      abs(selected_brightness_percent - current_brightness_percent) >= 2;
+
+  if (photo_changed || selected_sun_level != current_sun_level || brightness_changed) {
     current_sun_level = selected_sun_level;
-    displayPhoto(photos[curr_photo], current_sun_level);
+    current_brightness_percent = selected_brightness_percent;
+    displayPhoto(photos[curr_photo], current_sun_level, current_brightness_percent);
   }
 
   previous_command = command;

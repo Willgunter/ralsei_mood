@@ -13,6 +13,7 @@
 
 constexpr int SCREEN_WIDTH = 128;
 constexpr int SCREEN_HEIGHT = 128;
+constexpr int PIXEL_CHUNK_ROWS = 8;
 
 constexpr int OLED_CS  = 33;
 constexpr int OLED_DC  = 16;
@@ -20,6 +21,41 @@ constexpr int OLED_RST = 17;
 
 // 0x3C is the most common address for this OLED.
 Adafruit_SSD1351 display(OLED_CS, OLED_DC, OLED_RST);
+
+namespace {
+uint16_t scaleChannel(uint16_t value, uint16_t maximum, int brightness_percent) {
+  const uint32_t scaled =
+      (static_cast<uint32_t>(value) * brightness_percent + 50) / 100;
+  return scaled > maximum ? maximum : static_cast<uint16_t>(scaled);
+}
+
+uint16_t scaleRgb565(uint16_t pixel, int brightness_percent) {
+  const uint16_t red = scaleChannel((pixel >> 11) & 0x1F, 0x1F, brightness_percent);
+  const uint16_t green = scaleChannel((pixel >> 5) & 0x3F, 0x3F, brightness_percent);
+  const uint16_t blue = scaleChannel(pixel & 0x1F, 0x1F, brightness_percent);
+  return (red << 11) | (green << 5) | blue;
+}
+
+void drawPhotoAtBrightness(const uint16_t* pixels, int brightness_percent) {
+  if (brightness_percent == 100) {
+    display.drawRGBBitmap(0, 0, pixels, SCREEN_WIDTH, SCREEN_HEIGHT);
+    return;
+  }
+
+  // Process a few rows at a time so every stored image can use the same
+  // brightness control without needing a second 32 KB full-screen buffer.
+  static uint16_t adjusted_pixels[SCREEN_WIDTH * PIXEL_CHUNK_ROWS];
+  for (int y = 0; y < SCREEN_HEIGHT; y += PIXEL_CHUNK_ROWS) {
+    for (int index = 0; index < SCREEN_WIDTH * PIXEL_CHUNK_ROWS; ++index) {
+      const int source_index = y * SCREEN_WIDTH + index;
+      adjusted_pixels[index] = scaleRgb565(
+          pgm_read_word(pixels + source_index), brightness_percent);
+    }
+    display.drawRGBBitmap(
+        0, y, adjusted_pixels, SCREEN_WIDTH, PIXEL_CHUNK_ROWS);
+  }
+}
+}
 
 void setupDisplay() {
  
@@ -39,7 +75,7 @@ void setupDisplay() {
   display.drawCircle(64, 98, 18, MAGENTA);
 }
 
-void displayPhoto(PhotoId photo, SunLevel sun_level) {
+void displayPhoto(PhotoId photo, SunLevel sun_level, int brightness_percent) {
   const uint16_t* pixels = CABIN_SUNRISE_PHOTO_RGB565;
 
   switch (photo) {
@@ -70,5 +106,5 @@ void displayPhoto(PhotoId photo, SunLevel sun_level) {
       break;
   }
 
-  display.drawRGBBitmap(0, 0, pixels, SCREEN_WIDTH, SCREEN_HEIGHT);
+  drawPhotoAtBrightness(pixels, brightness_percent);
 }
