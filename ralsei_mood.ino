@@ -1,6 +1,5 @@
 #include "src/display/display.h" 
 
-#include "src/temperature/temperature.h"
 #include "src/photoresistor/photoresistor.h"
 #include "src/joystick/joystick.h"
 #include "src/potentiometer/potentiometer.h"
@@ -33,7 +32,6 @@ void setup() {
 }
 
 void loop() {
-  getTemperature();
   const SunLevel selected_sun_level = getPhotoResistor();
   const int selected_brightness_percent = getPotentiometerBrightnessPercent();
 
