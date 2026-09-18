@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../sun_level.h"
+
 enum class PhotoId {
   CABIN,
   MOM_AND_BRO,
@@ -10,5 +12,5 @@ enum class PhotoId {
 
 void setupDisplay();
 
-// Draw one full-color family photo selected by the joystick.
-void displayPhoto(PhotoId photo);
+// Draw one full-color family photo and its ambient-light sky level.
+void displayPhoto(PhotoId photo, SunLevel sun_level);

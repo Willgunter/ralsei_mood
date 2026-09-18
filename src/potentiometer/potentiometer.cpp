@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+#include "potentiometer.h"
+
 const int POT_PIN = 27;
 const int MAX_POT_VAL = 1023; // potentiometer ranges in value from 0 - 1023
 

@@ -39,23 +39,34 @@ void setupDisplay() {
   display.drawCircle(64, 98, 18, MAGENTA);
 }
 
-void displayPhoto(PhotoId photo) {
-  const uint16_t* pixels = CABIN_PHOTO_RGB565;
+void displayPhoto(PhotoId photo, SunLevel sun_level) {
+  const uint16_t* pixels = CABIN_SUNRISE_PHOTO_RGB565;
 
   switch (photo) {
     case PhotoId::MOM_AND_BRO:
-      pixels = MOM_AND_BRO_PHOTO_RGB565;
+      pixels = sun_level == SunLevel::NIGHT ? MOM_AND_BRO_NIGHT_PHOTO_RGB565 :
+               sun_level == SunLevel::MIDDAY ? MOM_AND_BRO_MIDDAY_PHOTO_RGB565 :
+                                               MOM_AND_BRO_SUNRISE_PHOTO_RGB565;
       break;
     case PhotoId::MOM_AND_DAD:
-      pixels = MOM_AND_DAD_PHOTO_RGB565;
+      pixels = sun_level == SunLevel::NIGHT ? MOM_AND_DAD_NIGHT_PHOTO_RGB565 :
+               sun_level == SunLevel::MIDDAY ? MOM_AND_DAD_MIDDAY_PHOTO_RGB565 :
+                                               MOM_AND_DAD_SUNRISE_PHOTO_RGB565;
       break;
     case PhotoId::MOM:
-      pixels = MOM_PHOTO_RGB565;
+      pixels = sun_level == SunLevel::NIGHT ? MOM_NIGHT_PHOTO_RGB565 :
+               sun_level == SunLevel::MIDDAY ? MOM_MIDDAY_PHOTO_RGB565 :
+                                               MOM_SUNRISE_PHOTO_RGB565;
       break;
     case PhotoId::THREE:
-      pixels = THREE_PHOTO_RGB565;
+      pixels = sun_level == SunLevel::NIGHT ? THREE_NIGHT_PHOTO_RGB565 :
+               sun_level == SunLevel::MIDDAY ? THREE_MIDDAY_PHOTO_RGB565 :
+                                               THREE_SUNRISE_PHOTO_RGB565;
       break;
     case PhotoId::CABIN:
+      pixels = sun_level == SunLevel::NIGHT ? CABIN_NIGHT_PHOTO_RGB565 :
+               sun_level == SunLevel::MIDDAY ? CABIN_MIDDAY_PHOTO_RGB565 :
+                                               CABIN_SUNRISE_PHOTO_RGB565;
       break;
   }
 
