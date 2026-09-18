@@ -7,6 +7,7 @@ import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[1]
+ASSETS = ROOT / "assets"
 OUTPUT = ROOT / "src/display/family_photos_rgb565.h"
 
 PHOTOS = (
@@ -50,8 +51,9 @@ def rgb565_pixels(path: Path, rotate_180: bool) -> tuple[int, ...]:
 
 
 def format_array(source: Path, array_name: str, pixels: tuple[int, ...]) -> str:
+    source_label = source.relative_to(ROOT)
     lines = [
-        f"// Source: {source.name}",
+        f"// Source: {source_label}",
         f"constexpr uint16_t {array_name}[] PROGMEM = {{",
     ]
     for start in range(0, len(pixels), 12):
@@ -74,7 +76,7 @@ def main() -> None:
 
     for base_name, symbol, rotate_180 in PHOTOS:
         for level_name, level_symbol in LEVELS:
-            source = ROOT / f"{base_name}_{level_name}.png"
+            source = ASSETS / base_name / f"{level_name}.png"
             if not source.exists():
                 raise FileNotFoundError(f"Missing required photo variant: {source}")
             pixels = rgb565_pixels(source, rotate_180)

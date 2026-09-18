@@ -35,10 +35,8 @@ void loop() {
   int command = getJoystick();
 
   // React once per joystick tilt. Return it to center before the next photo.
-  const bool left_pressed = (command & COMMAND_LEFT) &&
-                            !(previous_command & COMMAND_LEFT);
-  const bool right_pressed = (command & COMMAND_RIGHT) &&
-                             !(previous_command & COMMAND_RIGHT);
+  const bool left_pressed = (command & COMMAND_LEFT);
+  const bool right_pressed = (command & COMMAND_RIGHT);
 
   bool photo_changed = false;
 
